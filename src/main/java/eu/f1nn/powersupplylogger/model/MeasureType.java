@@ -5,5 +5,7 @@ package eu.f1nn.powersupplylogger.model;
  */
 public enum MeasureType {
     VOLTAGE,
-    CURRENT
+    ALARMVOLTAGE,
+    CURRENT,
+    ALARMCURRENT
 }

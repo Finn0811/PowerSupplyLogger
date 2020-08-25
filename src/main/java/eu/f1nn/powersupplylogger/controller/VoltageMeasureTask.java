@@ -1,6 +1,7 @@
 package eu.f1nn.powersupplylogger.controller;
 
 import com.pi4j.io.gpio.GpioPinAnalogInput;
+import com.pi4j.io.gpio.GpioPinDigitalInput;
 import eu.f1nn.powersupplylogger.model.MeasureType;
 import eu.f1nn.powersupplylogger.model.Measurement;
 import eu.f1nn.powersupplylogger.model.PowerSupply;
@@ -14,12 +15,12 @@ import java.text.DecimalFormat;
  */
 public class VoltageMeasureTask extends MeasureTask {
 
-    public VoltageMeasureTask(PowerSupply powerSupply, String serverUrl, DecimalFormat df, GpioPinAnalogInput input) {
-        super(powerSupply, serverUrl, df, input);
+    public VoltageMeasureTask(PowerSupply powerSupply, String serverUrl, DecimalFormat df, GpioPinAnalogInput input, GpioPinDigitalInput isAlarmInput) {
+        super(powerSupply, serverUrl, df, input, isAlarmInput);
     }
 
     public void run() {
-        this.getLogger().info("Measuring voltage...");
+        this.getLogger().info("Measuring voltage... (alarm: " + this.isAlarmMeasurement() + ")");
 
         this.takeSamples();
 
@@ -33,7 +34,7 @@ public class VoltageMeasureTask extends MeasureTask {
         this.getLogger().info(averageValue + " -> " + this.getDf().format(voltageDivider) + "V -> " + this.getDf().format(inputVoltage) + "V");
         this.getLogger().info("--------------------------------");
 
-        this.addMeasurement(new Measurement(this.getPowerSupply(), inputVoltage, MeasureType.VOLTAGE, System.currentTimeMillis()));
+        this.addMeasurement(new Measurement(this.getPowerSupply(), inputVoltage, this.isAlarmMeasurement() ? MeasureType.ALARMVOLTAGE : MeasureType.VOLTAGE, System.currentTimeMillis()));
         this.sendMeasurementsToServer();
     }
 }

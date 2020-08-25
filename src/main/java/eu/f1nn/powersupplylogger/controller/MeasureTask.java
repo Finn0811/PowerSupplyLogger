@@ -3,6 +3,7 @@ package eu.f1nn.powersupplylogger.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.pi4j.io.gpio.GpioPinAnalogInput;
+import com.pi4j.io.gpio.GpioPinDigitalInput;
 import eu.f1nn.powersupplylogger.model.Measurement;
 import eu.f1nn.powersupplylogger.model.PowerSupply;
 import org.slf4j.Logger;
@@ -27,16 +28,18 @@ public abstract class MeasureTask implements Runnable {
     private final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
     private DecimalFormat df;
     private GpioPinAnalogInput input;
+    private GpioPinDigitalInput isAlarmInput;
     private PowerSupply powerSupply;
     private List<Double> samples = new LinkedList<>();
     private List<Measurement> measurements = new LinkedList<>();
     private String serverUrl;
 
-    public MeasureTask(PowerSupply powerSupply, String serverUrl, DecimalFormat df, GpioPinAnalogInput input) {
+    public MeasureTask(PowerSupply powerSupply, String serverUrl, DecimalFormat df, GpioPinAnalogInput input, GpioPinDigitalInput isAlarmInput) {
         this.powerSupply = powerSupply;
         this.serverUrl = serverUrl;
         this.df = df;
         this.input = input;
+        this.isAlarmInput = isAlarmInput;
     }
 
     public void takeSamples() {
@@ -129,5 +132,17 @@ public abstract class MeasureTask implements Runnable {
 
     public void addMeasurement(Measurement measurement) {
         this.measurements.add(measurement);
+    }
+
+    public GpioPinDigitalInput getIsAlarmInput() {
+        return isAlarmInput;
+    }
+
+    public void setIsAlarmInput(GpioPinDigitalInput isAlarmInput) {
+        this.isAlarmInput = isAlarmInput;
+    }
+
+    public boolean isAlarmMeasurement() {
+        return this.isAlarmInput.getState().isHigh();
     }
 }

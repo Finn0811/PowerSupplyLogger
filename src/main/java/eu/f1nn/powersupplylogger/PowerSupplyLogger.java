@@ -48,8 +48,10 @@ public class PowerSupplyLogger {
         GpioPinAnalogInput currentInput = gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH1, "CurrentInput-CH1");
         GpioPinAnalogInput voltageInput = gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH2, "VoltageInput-CH2");
 
-        CurrentMeasureTask currentMeasureTask = new CurrentMeasureTask(powerSupply, configHandler.getConfig().serverUrl + "/rest/measurements", df, currentInput);
-        VoltageMeasureTask voltageMeasureTask = new VoltageMeasureTask(powerSupply, configHandler.getConfig().serverUrl + "/rest/measurements", df, voltageInput);
+        GpioPinDigitalInput isAlarmInput = gpio.provisionDigitalInputPin(RaspiPin.GPIO_05, PinPullResistance.PULL_DOWN);
+
+        CurrentMeasureTask currentMeasureTask = new CurrentMeasureTask(powerSupply, configHandler.getConfig().serverUrl + "/rest/measurements", df, currentInput, isAlarmInput);
+        VoltageMeasureTask voltageMeasureTask = new VoltageMeasureTask(powerSupply, configHandler.getConfig().serverUrl + "/rest/measurements", df, voltageInput, isAlarmInput);
 
         scheduler.scheduleAtFixedRate(currentMeasureTask, 0, 120, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(voltageMeasureTask, 0, 120, TimeUnit.SECONDS);
