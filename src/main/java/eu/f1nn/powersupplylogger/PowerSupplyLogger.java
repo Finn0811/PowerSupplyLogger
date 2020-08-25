@@ -32,7 +32,7 @@ public class PowerSupplyLogger {
 
     public static void main(String[] args) {
         ConfigHandler configHandler = new ConfigHandler();
-        configHandler.saveDefaultConfig(PowerSupplyLogger.class.getResourceAsStream("config.yml"));
+        configHandler.saveDefaultConfig(PowerSupplyLogger.class.getResourceAsStream("/config.yml"));
         configHandler.loadConfig();
 
         df.setRoundingMode(RoundingMode.CEILING);
