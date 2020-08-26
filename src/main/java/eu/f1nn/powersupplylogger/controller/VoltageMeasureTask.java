@@ -22,9 +22,7 @@ public class VoltageMeasureTask extends MeasureTask {
     public void run() {
         this.getLogger().info("Measuring voltage... (alarm: " + this.isAlarmMeasurement() + ")");
 
-        this.takeSamples();
-
-        double averageValue = this.getAverage();
+        double averageValue = this.takeSamples();
 
         this.getLogger().info("Average value: " + averageValue);
 

@@ -30,7 +30,7 @@ public abstract class MeasureTask implements Runnable {
     private GpioPinAnalogInput input;
     private GpioPinDigitalInput isAlarmInput;
     private PowerSupply powerSupply;
-    private List<Double> samples = new LinkedList<>();
+
     private List<Measurement> measurements = new LinkedList<>();
     private String serverUrl;
 
@@ -42,7 +42,9 @@ public abstract class MeasureTask implements Runnable {
         this.isAlarmInput = isAlarmInput;
     }
 
-    public void takeSamples() {
+    public double takeSamples() {
+        List<Double> samples = new LinkedList<>();
+
         IntStream.range(0, 10).forEach(i -> {
             double value = input.getValue();
 
@@ -54,12 +56,11 @@ public abstract class MeasureTask implements Runnable {
                 e.printStackTrace();
             }
         });
-    }
 
-    public double getAverage() {
         AtomicReference<Double> total = new AtomicReference<>(0.0);
-        this.samples.forEach((sample) -> total.set(total.get() + sample));
-        return total.get() / this.samples.size();
+        samples.forEach((sample) -> total.set(total.get() + sample));
+
+        return total.get() / samples.size();
     }
 
     public boolean sendMeasurementsToServer() {
@@ -68,7 +69,7 @@ public abstract class MeasureTask implements Runnable {
                 this.sendMeasurementToServer(measurement);
                 this.measurements.remove(measurement);
             } catch (Exception e) {
-                logger.error("Could not send Measurement (#" + measurement.timestamp + ") to server. Saving for next request.");
+                logger.error("Could not send measurement (#" + measurement.timestamp + ") to server. Saving for next request.");
             }
         });
         return true;

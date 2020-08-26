@@ -22,9 +22,7 @@ public class CurrentMeasureTask extends MeasureTask {
     public void run() {
         this.getLogger().info("Measuring current... (alarm: " + this.isAlarmMeasurement() + ")");
 
-        this.takeSamples();
-
-        double averageValue = this.getAverage();
+        double averageValue = this.takeSamples();
 
         this.getLogger().info("Average value: " + averageValue);
 
